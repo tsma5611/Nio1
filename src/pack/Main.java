@@ -9,6 +9,7 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("start");
+
         try {
             Path path = Paths.get("file.txt");
             Files.write(path, "Привет NIO".getBytes("cp1251"));
