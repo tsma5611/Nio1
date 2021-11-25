@@ -1,17 +1,16 @@
 package pack;
 
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Collections;
+
+import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("start");
         try {
-            Path path = Paths.get("file.txt");
+            Path path = Paths.get("file2.txt");
             String text = "Привет NIO";
             /*
             Files.write(path, "Привет NIO".getBytes("cp1251"));
@@ -40,14 +39,47 @@ public class Main {
             List<String> lines = Files.readAllLines(path, Charset.forName("cp1251"));
             System.out.println(lines);
             */
+            /*
+            System.out.println(Files.exists(path));
+            List<OpenOption> options = new ArrayList<>();
+            options.add(StandardOpenOption.CREATE);
+            options.add(StandardOpenOption.APPEND);
+            options.add(StandardOpenOption.DELETE_ON_CLOSE);
+            //options.add(StandardOpenOption.TRUNCATE_EXISTING);
+            //
             Files.write(
                     path.toAbsolutePath().getParent().resolve("file2.txt"),
                     Collections.singleton(text),
                     Charset.forName("cp1251"),
-                    StandardOpenOption.CREATE_NEW,
-                    //StandardOpenOption.WRITE,
-                    StandardOpenOption.APPEND
-                    );
+                    options.toArray(new OpenOption[0])
+            );
+            */
+            Path path2 = path.toAbsolutePath().getParent().resolve("file2.txt");
+            if (Files.exists(path2)) {
+                //path2.toFile().setWritable(true);
+                Files.setAttribute(path2,
+                        "dos:readonly",
+                        false
+                );
+            }
+            System.out.println(Files.isWritable(path2));
+            /*
+            Files.copy(
+                    path,
+                    path2,
+                    COPY_ATTRIBUTES,
+                    REPLACE_EXISTING
+            );
+            */
+            System.out.println(
+                    Files.createFile(
+                            path.toAbsolutePath().getParent().getParent().resolve("file2.txt"))
+            );
+            Files.move(
+                    path,
+                    path.toAbsolutePath().getParent().getParent().resolve("file2.txt"),
+                    ATOMIC_MOVE
+            );
         }
         catch (Exception e) {
             e.printStackTrace();
